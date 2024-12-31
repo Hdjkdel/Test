@@ -1,28 +1,20 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BNB Cüzdan Tarayıcı</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>BNB Tarama</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.6.esm.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.6/web3.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>BNB Cüzdan Tarayıcı</h1>
-        <div id="seed-container">
-            <p><strong>Seed:</strong> <span id="seed-words">Yükleniyor...</span></p>
-        </div>
-        <div id="balance-container">
-            <p><strong>Balance (BNB):</strong> <span id="balance">0.000</span></p>
-        </div>
-        <div id="address-container">
-            <p><strong>Adres:</strong> <span id="bnb-address">Yükleniyor...</span></p>
-        </div>
+    <div>
+        <h1>BNB Tarama</h1>
+        <p><strong>Seed:</strong> <span id="seed-words">Oluşturuluyor...</span></p>
+        <p><strong>BNB Adresi:</strong> <span id="bnb-address">Oluşturuluyor...</span></p>
+        <p><strong>Bakiye:</strong> <span id="balance">Oluşturuluyor...</span></p>
+        <button id="start-scan">Tarama Başlat</button>
     </div>
-
-    <!-- Kütüphaneleri ekleyin -->
-    <script src="web3.min.js"></script>
-    <script src="ethers.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

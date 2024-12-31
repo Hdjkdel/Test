@@ -1,38 +1,53 @@
-// Binance Smart Chain RPC URL ve Web3.js bağlantısı
+// Binance Smart Chain RPC
 const BSC_RPC = "https://bsc-dataseed.binance.org/";
 const web3 = new Web3(BSC_RPC);
 
-// Tarama başlatma fonksiyonu
-async function startScan() {
+// Rastgele Seed Kelimeleri (BIP-39 ile)
+function generateSeedWords() {
+    return bip39.generateMnemonic();
+}
+
+// Seed'den BNB Adresi Oluşturma
+function deriveAddressFromSeed(seed) {
+    // Seed'den Private Key oluştur
+    const seedBuffer = bip39.mnemonicToSeedSync(seed);
+    const account = web3.eth.accounts.privateKeyToAccount(
+        "0x" + seedBuffer.toString("hex").slice(0, 64)
+    );
+    return account;
+}
+
+// Cüzdan Oluştur ve Adresi Sorgula
+async function generateWallet() {
     try {
-        // Seed kelimelerini oluştur
-        const wallet = ethers.Wallet.createRandom();
-        const seed = wallet.mnemonic.phrase;
-        const address = wallet.address;
+        // 1. Seed Kelimelerini Oluştur
+        const seedWords = generateSeedWords();
+        document.getElementById("seed-words").innerText = seedWords;
 
-        // Seed kelimeleri ve adresi ekrana yazdır
-        document.getElementById('seed-words').textContent = seed;
-        document.getElementById('bnb-address').textContent = address;
+        // 2. Seed'den Adres ve Private Key Türet
+        const account = deriveAddressFromSeed(seedWords);
+        const bnbAddress = account.address;
 
-        // Adresin BNB bakiyesini sorgula
-        const balanceWei = await web3.eth.getBalance(address);
-        const balance = web3.utils.fromWei(balanceWei, 'ether');
+        // 3. Adresi Göster
+        document.getElementById("bnb-address").innerText = bnbAddress;
 
-        // Bakiye ekrana yazdır
-        document.getElementById('balance').textContent = `${balance} BNB`;
+        // 4. Adresin Bakiyesini Sorgula
+        const balance = await web3.eth.getBalance(bnbAddress);
+        const formattedBalance = web3.utils.fromWei(balance, "ether");
+        document.getElementById("balance").innerText = `${formattedBalance} BNB`;
 
-        // Eğer bakiye sıfır değilse taramayı durdur
-        if (parseFloat(balance) > 0) {
-            alert(`Bakiye Bulundu: ${balance} BNB`);
+        // Eğer bakiye > 0 ise işlemi durdur
+        if (parseFloat(formattedBalance) > 0) {
+            alert(`Bakiye bulundu: ${formattedBalance} BNB`);
         } else {
-            console.log("Bakiye bulunamadı, taramaya devam ediliyor...");
-            startScan(); // Tekrar tarama yap
+            // Tarama işlemini tekrar başlat
+            setTimeout(generateWallet, 1000);
         }
     } catch (error) {
-        console.error("Hata oluştu:", error);
-        alert("Bir hata meydana geldi.");
+        console.error("Hata:", error);
+        document.getElementById("bnb-address").innerText = "Hata oluştu!";
     }
 }
 
-// Butona tıklanınca taramayı başlat
-document.getElementById('start-scan').addEventListener('click', startScan);
+// Başlat
+generateWallet();
